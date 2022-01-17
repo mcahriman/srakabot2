@@ -27,10 +27,10 @@ func getUpdatesDB() *kivik.DB {
 	return cbInstance.DB("srakabot_db")
 }
 
-func getUserMetadataDB() *kivik.DB {
-	db := cbInstance.DB("srakabot_user_metadata")
-	return db
-}
+// func getUserMetadataDB() *kivik.DB {
+// 	db := cbInstance.DB("srakabot_user_metadata")
+// 	return db
+// }
 
 func putVote(message tgbotapi.Message, value int) {
 	db := getUpdatesDB()
