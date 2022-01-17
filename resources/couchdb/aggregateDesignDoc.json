@@ -1,0 +1,29 @@
+{
+    "_id": "_design/aggregateByPostCount",
+    "_rev": "30-e56228608ecf85f3c6907402fa2d42b0",
+    "views": {
+      "aggregateMessage": {
+        "reduce": "_count",
+        "map": "function (doc) {\n  emit(doc.userId, 1);\n}"
+      },
+      "messagesByUser": {
+        "reduce": "_stats",
+        "map": "function (doc) {\n  if(doc.type === 'message')\n  emit(doc.user.username, 1);\n}"
+      },
+      "votes": {
+        "map": "function (doc) {\n  if(doc.type=='vote') emit(doc.voteTargetUser.id, doc.voteValue);\n}"
+      },
+      "messages": {
+        "map": "function (doc) {\n  if (doc.type == 'message') emit(doc._id, 1);\n}"
+      },
+      "votesSumByUserAndChat": {
+        "reduce": "_sum",
+        "map": "function (doc) {\n  if (doc.type == 'vote')\n  emit([ doc.chat.id, doc.voteTargetUser.id], doc.voteValue);\n}"
+      },
+      "includingUserName": {
+        "reduce": "_sum",
+        "map": "function (doc) {\n  if (doc.type == 'vote')\n  emit(`${doc.chat.title}, ${doc.voteTargetUser.username} - ${doc.voteTargetUser.first_name} ${doc.voteTargetUser.last_name}`, doc.voteValue);\n}"
+      }
+    },
+    "language": "javascript"
+  }

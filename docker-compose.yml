@@ -1,0 +1,11 @@
+version: '3.0'
+services:
+  db:
+    image: "couchdb:latest"
+    environment:
+      - COUCHDB_USER=couchdb
+      - COUCHDB_PASSWORD=password
+    volumes:
+      - /usr/local/var/lib/couchdb:/opt/couchdb/data
+      - /usr/local/var/log/:/opt/couchdb/log/
+    network_mode: host
