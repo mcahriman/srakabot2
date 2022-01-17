@@ -55,13 +55,23 @@ func calculateDesignation(karma int, spam int) string {
 }
 
 func findKRankByVal(val int) KarmaRank {
-	nextRank := KarmaRank{Karma: 1000}
+
+	mRank := KarmaRank{Karma: 0}
+
+	//Find minimal karma Rank
 	for _, r := range getKarmaRanksCsvEmbedded() {
-		if r.Karma > nextRank.Karma && r.Karma <= val {
-			nextRank = *r
+		if r.Karma < mRank.Karma {
+			mRank = *r
 		}
 	}
-	return nextRank
+
+	//Find rank that fits
+	for _, r := range getKarmaRanksCsvEmbedded() {
+		if r.Karma > mRank.Karma && r.Karma <= val {
+			mRank = *r
+		}
+	}
+	return mRank
 }
 
 func findRankByVal(val int) SpamRank {

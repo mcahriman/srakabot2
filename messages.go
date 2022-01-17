@@ -4,6 +4,9 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"log"
+	"strconv"
+	"strings"
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -58,13 +61,15 @@ func processUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 
 func processMessage(bot *tgbotapi.BotAPI, message tgbotapi.Message) {
 
-	if stringInSlice(message.Text, AllowedCommands) {
-		switch message.Text {
+	messageChunks := strings.Split(message.Text, " ")
+
+	if len(messageChunks) >= 1 && stringInSlice(messageChunks[0], AllowedCommands) {
+		switch messageChunks[0] {
 		case "/stats":
 			stats := getStats(int(message.Chat.ID))
 			statsFormatted := "Статистика-Хуистика:\n"
 			for _, v := range stats {
-				statsFormatted += fmt.Sprintf("%s: cообщений: %d, карма: %d\n", getName(&v.User), v.MessageCount, v.Karma)
+				statsFormatted += fmt.Sprintf("%s %s: cообщений: %d, карма: %d\n", calculateDesignation(v.Karma, int(v.MessageCount)), getName(&v.User), v.MessageCount, v.Karma)
 			}
 			responseConfig := tgbotapi.NewMessage(
 				message.Chat.ID,
@@ -110,62 +115,25 @@ func processMessage(bot *tgbotapi.BotAPI, message tgbotapi.Message) {
 				)
 				bot.Send(responseConfig)
 			}
-			// TODO: Investigate escaping options
-			//responseConfig.ParseMode = "MarkdownV2"
+		case "/rankDiag":
+			if len(messageChunks) != 3 {
+				return
+			} else {
+				s, err := strconv.Atoi(messageChunks[1])
+				if err != nil {
+					log.Printf("Incorrect Params %s", message.Text)
+				}
+				k, err := strconv.Atoi(messageChunks[2])
+				if err != nil {
+					log.Printf("Incorrect Params %s", message.Text)
+				}
+				responseConfig := tgbotapi.NewMessage(
+					message.Chat.ID,
+					calculateDesignation(k, s),
+				)
+				bot.Send(responseConfig)
 
-			//TODO: User rank from db
-			// case "/importRanks":
-			// 	metaDb := getUserMetadataDB()
-			// 	getRanksCSVEmbeded()
-
-			//case "/rankDiag":
-			//errors := ""
-			//docs := ranksDb.AllDocs(context.TODO())
-
-			//log.Printf("%+v", docs)
-
-			// 	dir, err := os.MkdirTemp("", "srakabot")
-			// 	if err != nil {
-			// 		return
-			// 	}
-
-			// 	for i, v := range getRanksCSVEmbeded() {
-			// 		res, err := http.DefaultClient.Get(v.Picture)
-			// 		log.Printf("%+v", res)
-			// 		if err != nil || res.StatusCode >= 400 {
-			// 			errors = errors + fmt.Sprintf("Ранг %s: кортинко %s не грузиццо\n", v.RankName, v.Picture)
-			// 		} else {
-
-			// 			b, err := ioutil.ReadAll(res.Body)
-			// 			if err != nil {
-			// 				continue
-			// 			}
-			// 			ct := strings.Split(http.DetectContentType(b), "/")
-
-			// 			ioutil.WriteFile(fmt.Sprintf("%s/rank_%d.%s", dir, i, ct[1]), b, 0644)
-
-			// 			//	tgbotapi.RequestFileData{}
-			// 			//	tgbotapi.NewPhoto(message.Chat.ID, res.Body)
-			// 		}
-			// 		if i%15 == 0 {
-			// 			if errors != "" {
-			// 				responseConfig := tgbotapi.NewMessage(
-			// 					message.Chat.ID,
-			// 					errors,
-			// 				)
-			// 				bot.Send(responseConfig)
-			// 				errors = ""
-			// 			}
-			// 		}
-			// 	}
-			// 	if errors != "" {
-			// 		responseConfig := tgbotapi.NewMessage(
-			// 			message.Chat.ID,
-			// 			errors,
-			// 		)
-			// 		bot.Send(responseConfig)
-			// 		errors = ""
-			// 	}
+			}
 		}
 	}
 
