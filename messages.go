@@ -94,6 +94,22 @@ func processMessage(bot *tgbotapi.BotAPI, message tgbotapi.Message) {
 				)
 				bot.Send(responseConfig)
 			}
+			for _, chunk := range getKarmaRanksDescriptionsSplitted() {
+
+				rankDesk := ""
+				for _, v := range chunk {
+					rankDesk = rankDesk + fmt.Sprintf("%d -> %s\n",
+						v.Karma,
+						v.Rank,
+					)
+				}
+
+				responseConfig := tgbotapi.NewMessage(
+					message.Chat.ID,
+					rankDesk,
+				)
+				bot.Send(responseConfig)
+			}
 			// TODO: Investigate escaping options
 			//responseConfig.ParseMode = "MarkdownV2"
 

@@ -27,7 +27,7 @@ type SpamRank struct {
 
 type KarmaRank struct {
 	Karma int    `csv:"karma" json:"karma"`
-	Rank  string `csv:"rank" json: "rank"`
+	Rank  string `csv:"rank" json:"rank"`
 }
 
 func getRanksCSVEmbeded() []*SpamRank {
@@ -40,12 +40,38 @@ func getRanksCSVEmbeded() []*SpamRank {
 func getKarmaRanksCsvEmbedded() []*KarmaRank {
 
 	karmaRanks := []*KarmaRank{}
-	err := gocsv.UnmarshalString(karmarankCsv, karmaRanks)
+	err := gocsv.UnmarshalString(karmarankCsv, &karmaRanks)
 	if err != nil {
 		fmt.Printf("%+v, err: %+v", karmaRanks, err)
 
 	}
 	return karmaRanks
+}
+
+func calculateDesignation(karma int, spam int) string {
+	kRank := findKRankByVal(karma)
+	sRank := findRankByVal(spam)
+	return fmt.Sprintf("%s %s %s", sRank.Emoji, kRank.Rank, sRank.RankName)
+}
+
+func findKRankByVal(val int) KarmaRank {
+	nextRank := KarmaRank{Karma: 1000}
+	for _, r := range getKarmaRanksCsvEmbedded() {
+		if r.Karma > nextRank.Karma && r.Karma <= val {
+			nextRank = *r
+		}
+	}
+	return nextRank
+}
+
+func findRankByVal(val int) SpamRank {
+	nextRank := SpamRank{MinMessages: -900000}
+	for _, r := range getRanksCSVEmbeded() {
+		if r.MinMessages > nextRank.MinMessages && r.MinMessages <= val {
+			nextRank = *r
+		}
+	}
+	return nextRank
 }
 
 func getRanksDescriptionsSplitted() [][]*SpamRank {

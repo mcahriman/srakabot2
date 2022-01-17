@@ -27,7 +27,7 @@ func getUpdatesDB() *kivik.DB {
 	return cbInstance.DB("srakabot_db")
 }
 
-func getRanksDB() *kivik.DB {
+func getUserMetadataDB() *kivik.DB {
 	db := cbInstance.DB("srakabot_user_metadata")
 	return db
 }
