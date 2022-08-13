@@ -4,11 +4,3 @@ curl -X GET couchdb:password@localhost:5984/_all_dbs
 curl -X PUT couchdb:password@localhost:5984/_users
 curl -X PUT couchdb:password@localhost:5984/_replicator
 curl -X PUT couchdb:password@localhost:5984/_global_changes
-
-
-curl -v -X POST http://localhost/pools/default/buckets \
--u couchdb:password \
--d name=testBucket \
--d bucketType=couchbase \
--d ramQuotaMB=512 \
--d durabilityMinLevel=majorityAndPersistActive

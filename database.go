@@ -55,9 +55,6 @@ type KarmaUserKey struct {
 
 func getKarma(userId int, chatId int) int {
 	db := getUpdatesDB()
-	fmt.Print(chatId)
-	fmt.Print("-")
-	fmt.Print(userId)
 	resultSet := db.Query(context.TODO(), "_design/aggregateByPostCount", "_view/votesAndChatStats", kivik.Options{
 		"reduce":   true,
 		"group":    true,
