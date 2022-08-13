@@ -4,8 +4,7 @@ name: Generate release-artifacts
 # on events
 on:
   release:
-    types: 
-        - edited
+    types:
         - created
 
 
@@ -30,27 +29,27 @@ jobs:
         # gzip dist/srakabot-linux-amd64
         gzip dist/srakabot-linux-arm64
 
-    - name: Dump GitHub context
-      id: github_context_step
-      run: echo '${{ toJSON(github) }}'
-    - name: Dump job context
-      run: echo '${{ toJSON(job) }}'
-    - name: Dump steps context
-      run: echo '${{ toJSON(steps) }}'
-    - name: Dump runner context
-      run: echo '${{ toJSON(runner) }}'
-    - name: Dump strategy context
-      run: echo '${{ toJSON(strategy) }}'
-    - name: Dump matrix context
-      run: echo '${{ toJSON(matrix) }}'
+    # - name: Dump GitHub context
+    #   id: github_context_step
+    #   run: echo '${{ toJSON(github) }}'
+    # - name: Dump job context
+    #   run: echo '${{ toJSON(job) }}'
+    # - name: Dump steps context
+    #   run: echo '${{ toJSON(steps) }}'
+    # - name: Dump runner context
+    #   run: echo '${{ toJSON(runner) }}'
+    # - name: Dump strategy context
+    #   run: echo '${{ toJSON(strategy) }}'
+    # - name: Dump matrix context
+    #   run: echo '${{ toJSON(matrix) }}'
         
-    # - name: Upload Release Asset  LInux-arm64
-    #   id: upload-release-asset 
-    #   uses: actions/upload-release-asset@v1
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with:
-    #     upload_url: ${{ inputs.release.upload_url }} 
-    #     asset_path: ./dist/srakabot-linux-arm64.gz
-    #     asset_name: dist/srakabot-linux-arm64.gz
-    #     asset_content_type: application/gzip
+    - name: Upload Release Asset  LInux-arm64
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }} 
+        asset_path: ./dist/srakabot-linux-arm64.gz
+        asset_name: dist/srakabot-linux-arm64.gz
+        asset_content_type: application/gzip
