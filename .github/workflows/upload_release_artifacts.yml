@@ -1,11 +1,13 @@
-name: Build Srakabot for aarch64
+# workflow name
+name: Generate release-artifacts
 
+# on events
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+  release:
+    types: 
+        - created
 
+# workflow tasks
 jobs:
   generate:
     name: Generate cross-platform builds
@@ -16,7 +18,7 @@ jobs:
       - name: Generate build files
         uses: thatisuday/go-cross-build@v1
         with:
-            platforms: 'linux/amd64, linux/aarch64 darwin/amd64, windows/amd64'
+            platforms: 'linux/amd64, linux/aarch64, windows/amd64'
             package: ''
             name: 'srakabot'
             compress: 'true'
