@@ -10,6 +10,6 @@ docker run -d -e COUCHDB_USER=couchdb -e COUCHDB_PASSWORD=password \
     --network=host \
     --restart=always \
     --name="srakabot.couchdb" \
-    couchdb:latest
+    couchdb:3.2
 
 

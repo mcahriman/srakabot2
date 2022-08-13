@@ -1,0 +1,14 @@
+[Unit]
+Description=Srakabot Service
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=opc
+ExecStart=/home/opc/srakabot
+
+[Install]
+WantedBy=multi-user.target
