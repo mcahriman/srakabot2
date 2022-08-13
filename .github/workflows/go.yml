@@ -7,30 +7,17 @@ on:
     branches: [ master ]
 
 jobs:
-
-  build:
+  generate:
+    name: Generate cross-platform builds
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        arch: aarch64
-        go-version: 1.17
-
-    - name: Build
-      run: |
-        go build -v ./...
-        tar -cvzf srakabot-aarch64.tgz srakabot
-      
-
-    - name: Test
-      run: go test -v ./...
-
-    - name: Publish
-      uses: actions/upload-artifact@v2
-      with:
-        name: assets-for-download
-        path: srakabot-aarch64.tgz
-
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+      - name: Generate build files
+        uses: thatisuday/go-cross-build@v1
+        with:
+            platforms: 'linux/amd64, linux/aarch64 darwin/amd64, windows/amd64'
+            package: ''
+            name: 'srakabot'
+            compress: 'true'
+            dest: 'dist'
