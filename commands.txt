@@ -1,6 +1,15 @@
-curl -X PUT couchdb:password@localhost:5984/srakabot_db
-curl -X GET couchdb:password@localhost:5984/_all_dbs
+Server Deployment:
 
-curl -X PUT couchdb:password@localhost:5984/_users
-curl -X PUT couchdb:password@localhost:5984/_replicator
-curl -X PUT couchdb:password@localhost:5984/_global_changes
+- Load dump, place the dump to original path
+- 
+[root@srakabot-home opc]# 
+
+docker run -d -e COUCHDB_USER=couchdb -e COUCHDB_PASSWORD=password \
+    -v "/usr/local/var/lib/couchdb:/opt/couchdb/data" \
+    -v "/usr/local/var/log/:/opt/couchdb/log/" \
+    --network=host \
+    --restart=always \
+    --name="srakabot.couchdb" \
+    couchdb:latest
+
+

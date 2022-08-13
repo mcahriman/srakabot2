@@ -67,9 +67,9 @@ func processMessage(bot *tgbotapi.BotAPI, message tgbotapi.Message) {
 		switch messageChunks[0] {
 		case "/stats":
 			stats := getStats(int(message.Chat.ID))
-			statsFormatted := "Статистика-Хуистика:\n"
+			statsFormatted := "Хуїстика:\n"
 			for _, v := range stats {
-				statsFormatted += fmt.Sprintf("%s %s: cообщений: %d, карма: %d\n", calculateDesignation(v.Karma, int(v.MessageCount)), getName(&v.User), v.MessageCount, v.Karma)
+				statsFormatted += fmt.Sprintf("%s %s: повідомлень: %d, карма: %d\n", calculateDesignation(v.Karma, int(v.MessageCount)), getName(&v.User), v.MessageCount, v.Karma)
 			}
 			responseConfig := tgbotapi.NewMessage(
 				message.Chat.ID,
