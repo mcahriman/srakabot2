@@ -7,7 +7,6 @@ on:
     types:
         - created
 
-
 jobs:
 
   build:
@@ -24,7 +23,7 @@ jobs:
       run: |
         # GOOS=windows GOARCH=amd64 go build -buildmode exe -o dist/srakabot-win64.exe
         # GOOS=linux   GOARCH=amd64 go build -buildmode exe -o dist/srakabot-linux-amd64
-        GOOS=linux   GOARCH=arm64 go build -buildmode exe -o dist/srakabot-linux-arm64
+        GOOS=linux   GOARCH=arm64 go build -buildmode exe -o dist/srakabot-linux-arm64-{{ github.ref_name }}
         # gzip dist/srakabot-win64.exe
         # gzip dist/srakabot-linux-amd64
         gzip dist/srakabot-linux-arm64
@@ -50,6 +49,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }} 
-        asset_path: ./dist/srakabot-linux-arm64.gz
-        asset_name: dist/srakabot-linux-arm64.gz
+        asset_path: ./dist/srakabot-linux-arm64-{{ github.ref_name }}.gz
+        asset_name: srakabot-linux-arm64-{{ github.ref_name }}.gz
         asset_content_type: application/gzip
