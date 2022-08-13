@@ -1,4 +1,4 @@
-function (keys, values, rereduce) {
+(function (keys, values, rereduce) {
     let sumKarma = function(a,b) {
       return a+b.karma;
     };
@@ -21,4 +21,4 @@ function (keys, values, rereduce) {
       messageCount: values.reduce(addMessageCount,0),
       user: values[0].user
     };
-  }
+  })
