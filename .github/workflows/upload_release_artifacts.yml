@@ -5,21 +5,52 @@ name: Generate release-artifacts
 on:
   release:
     types: 
+        - edited
         - created
 
-# workflow tasks
+
 jobs:
-  generate:
-    name: Generate cross-platform builds
+
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v2
-      - name: Generate build files
-        uses: thatisuday/go-cross-build@v1
-        with:
-            platforms: 'linux/amd64, linux/arm64, windows/amd64'
-            package: ''
-            name: 'srakabot'
-            compress: 'true'
-            dest: 'dist'
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
+
+    - name: Cross Build
+      run: |
+        # GOOS=windows GOARCH=amd64 go build -buildmode exe -o dist/srakabot-win64.exe
+        # GOOS=linux   GOARCH=amd64 go build -buildmode exe -o dist/srakabot-linux-amd64
+        GOOS=linux   GOARCH=arm64 go build -buildmode exe -o dist/srakabot-linux-arm64
+        # gzip dist/srakabot-win64.exe
+        # gzip dist/srakabot-linux-amd64
+        gzip dist/srakabot-linux-arm64
+
+    - name: Dump GitHub context
+      id: github_context_step
+      run: echo '${{ toJSON(github) }}'
+    - name: Dump job context
+      run: echo '${{ toJSON(job) }}'
+    - name: Dump steps context
+      run: echo '${{ toJSON(steps) }}'
+    - name: Dump runner context
+      run: echo '${{ toJSON(runner) }}'
+    - name: Dump strategy context
+      run: echo '${{ toJSON(strategy) }}'
+    - name: Dump matrix context
+      run: echo '${{ toJSON(matrix) }}'
+        
+    # - name: Upload Release Asset  LInux-arm64
+    #   id: upload-release-asset 
+    #   uses: actions/upload-release-asset@v1
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with:
+    #     upload_url: ${{ inputs.release.upload_url }} 
+    #     asset_path: ./dist/srakabot-linux-arm64.gz
+    #     asset_name: dist/srakabot-linux-arm64.gz
+    #     asset_content_type: application/gzip
