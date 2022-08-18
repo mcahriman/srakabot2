@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	"github.com/go-kivik/couchdb/v4"
 	"github.com/go-kivik/kivik/v4"
@@ -108,5 +109,8 @@ func getStats(chatId int) []StatsEntry {
 			entries = append(entries, entry)
 		}
 	}
+	sort.SliceStable(entries, func(i int, j int) bool {
+		return entries[i].MessageCount > entries[j].MessageCount
+	})
 	return entries
 }

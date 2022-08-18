@@ -25,7 +25,7 @@ func voteUp(bot *tgbotapi.BotAPI, message tgbotapi.Message) {
 	putVote(message, 1)
 	newKarma := getKarma(int(message.ReplyToMessage.From.ID), int(message.Chat.ID))
 	responseConfig := tgbotapi.NewMessage(message.Chat.ID,
-		fmt.Sprintf("%s поднял репутацию пользователя %s, теперь его карма %d",
+		fmt.Sprintf("%s збільшив репутацію %s до %d",
 			getName(message.From),
 			getName(message.ReplyToMessage.From),
 			newKarma,
@@ -38,7 +38,7 @@ func checkVote(bot *tgbotapi.BotAPI, message tgbotapi.Message) bool {
 	if message.From.ID == message.ReplyToMessage.From.ID {
 		responseConfig := tgbotapi.NewMessage(
 			message.Chat.ID,
-			fmt.Sprintf("За себя голосовать нельзя, %s", getName(message.From)),
+			fmt.Sprintf("Не можна за себе голосувати, %s", getName(message.From)),
 		)
 		bot.Send(responseConfig)
 		return false
@@ -51,7 +51,7 @@ func voteDown(bot *tgbotapi.BotAPI, message tgbotapi.Message) {
 	putVote(message, -1)
 	newKarma := getKarma(int(message.ReplyToMessage.From.ID), int(message.Chat.ID))
 	responseConfig := tgbotapi.NewMessage(message.Chat.ID,
-		fmt.Sprintf("%s опустил репутацию пользователя %s, теперь его карма %d",
+		fmt.Sprintf("%s зменьшив репитацію %s до %d",
 			getName(message.From),
 			getName(message.ReplyToMessage.From),
 			newKarma,
