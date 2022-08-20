@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-
 	//connect to touchbase
 	cbConnect()
 

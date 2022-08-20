@@ -27,6 +27,7 @@ var AllowedCommands = []string{
 	"/stats",
 	"/showRanksTest",
 	"/rankDiag",
+	"/bledina",
 }
 
 func processUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
@@ -69,14 +70,18 @@ func processMessage(bot *tgbotapi.BotAPI, message tgbotapi.Message) {
 			stats := getStats(int(message.Chat.ID))
 			statsFormatted := "Хуїстика:\n"
 			for _, v := range stats {
-				statsFormatted += fmt.Sprintf("%s %s: повідомлень: %d, карма: %d\n", calculateDesignation(v.Karma, int(v.MessageCount)), getName(&v.User), v.MessageCount, v.Karma)
+				statsFormatted += fmt.Sprintf("%s <b>%s</b>: повідомлень: %d, карма: %d\n",
+					calculateDesignation(v.Karma, int(v.MessageCount)),
+					getName(&v.User),
+					v.MessageCount,
+					v.Karma)
 			}
 			responseConfig := tgbotapi.NewMessage(
 				message.Chat.ID,
 				statsFormatted,
 			)
 			// TODO: Investigate escaping options
-			//responseConfig.ParseMode = "MarkdownV2"
+			responseConfig.ParseMode = "HTML"
 			bot.Send(responseConfig)
 
 		case "/showRanksTest":
@@ -134,12 +139,18 @@ func processMessage(bot *tgbotapi.BotAPI, message tgbotapi.Message) {
 				bot.Send(responseConfig)
 
 			}
+		case "/bledina":
+			go func() {
+				sraketa()
+				responseConfig := tgbotapi.NewPhoto(message.Chat.ID, tgbotapi.FilePath("sraketa_current.png"))
+				bot.Send(responseConfig)
+			}()
 		}
 	}
 
-	if stringInSlice(message.Text, []string{"+", "-"}) && message.ReplyToMessage != nil && !message.ReplyToMessage.From.IsBot {
+	if stringInSlice(message.Text, []string{"+", "-", "Дякую", "дякую", "дякі", "дяк", "thanks", "ty", "🔥", "👍"}) && message.ReplyToMessage != nil && !message.ReplyToMessage.From.IsBot {
 		switch message.Text {
-		case "+":
+		case "+", "Дякую", "дякую", "дякі", "дяк", "thanks", "ty", "🔥", "👍":
 			voteUp(bot, message)
 		case "-":
 			voteDown(bot, message)
@@ -152,10 +163,10 @@ func deleteMessageWithDelay(bot *tgbotapi.BotAPI, message tgbotapi.Message, resp
 
 	go func(message tgbotapi.Message, response tgbotapi.Message) {
 		time.Sleep(10 * time.Second)
-		delete := tgbotapi.NewDeleteMessage(message.Chat.ID, response.MessageID)
-		bot.Send(delete)
-		delete = tgbotapi.NewDeleteMessage(message.Chat.ID, message.MessageID)
-		bot.Send(delete)
+		//delete := tgbotapi.NewDeleteMessage(message.Chat.ID, response.MessageID)
+		//bot.Send(delete)
+		// delete := tgbotapi.NewDeleteMessage(message.Chat.ID, message.MessageID)
+		// bot.Send(delete)
 	}(message, response)
 
 }

@@ -25,11 +25,15 @@ func voteUp(bot *tgbotapi.BotAPI, message tgbotapi.Message) {
 	putVote(message, 1)
 	newKarma := getKarma(int(message.ReplyToMessage.From.ID), int(message.Chat.ID))
 	responseConfig := tgbotapi.NewMessage(message.Chat.ID,
-		fmt.Sprintf("%s збільшив репутацію %s до %d",
+		fmt.Sprintf("<b>%s</b> збільшив репутацію <b>%s</b> до <b>%d</b> за <a href='https://t.me/c/%d/%d'>це</a>",
 			getName(message.From),
 			getName(message.ReplyToMessage.From),
 			newKarma,
+			-message.Chat.ID-1000000000000,
+			message.ReplyToMessage.MessageID,
 		))
+	responseConfig.ParseMode = "HTML"
+
 	response, _ := bot.Send(responseConfig)
 	deleteMessageWithDelay(bot, message, response)
 }
@@ -51,11 +55,14 @@ func voteDown(bot *tgbotapi.BotAPI, message tgbotapi.Message) {
 	putVote(message, -1)
 	newKarma := getKarma(int(message.ReplyToMessage.From.ID), int(message.Chat.ID))
 	responseConfig := tgbotapi.NewMessage(message.Chat.ID,
-		fmt.Sprintf("%s зменьшив репитацію %s до %d",
+		fmt.Sprintf("<b>%s</b> зменьшив репутацію <b>%s</b> до <b>%d</b> за <a href='https://t.me/c/%d/%d'>це</a>",
 			getName(message.From),
 			getName(message.ReplyToMessage.From),
 			newKarma,
+			-message.Chat.ID-1000000000000,
+			message.ReplyToMessage.MessageID,
 		))
+	responseConfig.ParseMode = "HTML"
 	response, _ := bot.Send(responseConfig)
 
 	deleteMessageWithDelay(bot, message, response)
