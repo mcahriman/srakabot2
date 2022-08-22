@@ -6,11 +6,17 @@ import (
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/playwright-community/playwright-go"
 )
 
 func main() {
 	//connect to touchbase
 	cbConnect()
+	err := playwright.Install()
+	if err != nil {
+		log.Printf("Could not install playwright")
+		os.Exit(1)
+	}
 
 	token := os.Getenv("TGBOT_API_TOKEN")
 	file_location := os.Getenv("HOME") + "/.srakabot_token"
