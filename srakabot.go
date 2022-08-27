@@ -1,35 +1,39 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"os"
-	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/playwright-community/playwright-go"
 )
 
+var appConfig *Config
+
+var AllowedCommands = []string{
+	"/stats",
+	"/showRanksTest",
+	"/rankDiag",
+	"/bledina",
+}
+
 func main() {
+
+	var err error
+	configFileLocationPtr := flag.String("config", os.Getenv("HOME")+"/.srakabot.yml", "Config file location")
+
+	appConfig, err = getConfig(*configFileLocationPtr)
+	if err != nil {
+		log.Fatalf("Could not load configuration")
+	}
+
 	//connect to touchbase
 	cbConnect()
-	err := playwright.Install()
-	if err != nil {
-		log.Printf("Could not install playwright")
-		os.Exit(1)
+	if !sraketa_init() {
+		log.Printf("Could not initialize alerts")
 	}
 
-	token := os.Getenv("TGBOT_API_TOKEN")
-	file_location := os.Getenv("HOME") + "/.srakabot_token"
-	if token == "" {
-		contents, err := os.ReadFile(file_location)
-		if err == nil {
-			token = strings.Trim(string(contents), "\n")
-		} else {
-			log.Printf("%s could not be read and environment variable TG_BOT_API_TOKEN is not defined", file_location)
-		}
-	}
-
-	bot, err := tgbotapi.NewBotAPI(token)
+	bot, err := tgbotapi.NewBotAPI(appConfig.Telegram.ApiToken)
 	if err != nil {
 		os.Exit(1)
 	}

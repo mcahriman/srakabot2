@@ -6,35 +6,64 @@ import (
 	"github.com/playwright-community/playwright-go"
 )
 
-func sraketa() {
-	pw, err := playwright.Run()
-	if err != nil {
-		log.Fatalf("could not start playwright: %v", err)
+var loadedPage playwright.Page
+var playwrightError error
+var playwrightInstance *playwright.Playwright
+var playwrightBrowser playwright.Browser
+
+func sraketa_init() bool {
+	playwrightError = playwright.Install()
+	if playwrightError != nil {
+		log.Printf("Could not install playwright")
+		return false
 	}
-	browser, err := pw.Firefox.Launch()
-	if err != nil {
-		log.Fatalf("could not launch browser: %v", err)
+
+	playwrightInstance, playwrightError = playwright.Run()
+	if playwrightError != nil {
+		return false
 	}
-	page, err := browser.NewPage()
-	if err != nil {
-		log.Fatalf("could not create page: %v", err)
+
+	playwrightBrowser, playwrightError = playwrightInstance.Firefox.Launch()
+	if playwrightError != nil {
+		return false
 	}
-	if _, err = page.Goto("https://alerts.in.ua", playwright.PageGotoOptions{
+
+	loadedPage, playwrightError = playwrightBrowser.NewPage()
+
+	if playwrightError != nil {
+		return false
+	}
+
+	if _, playwrightError = loadedPage.Goto("https://alerts.in.ua", playwright.PageGotoOptions{
 		WaitUntil: playwright.WaitUntilStateNetworkidle,
-	}); err != nil {
-		log.Fatalf("could not goto: %v", err)
+	}); playwrightError != nil {
+		return false
+	}
+	return true
+
+}
+
+func sraketa() bool {
+	if playwrightError == nil {
+
+		if _, err := loadedPage.Screenshot(playwright.PageScreenshotOptions{
+			Path: playwright.String("sraketa_current.png"),
+		}); err != nil {
+			log.Printf("could not create screenshot: %v", err)
+			return false
+		}
+		return true
+	} else {
+		return false
 	}
 
-	if _, err = page.Screenshot(playwright.PageScreenshotOptions{
-		Path: playwright.String("sraketa_current.png"),
-	}); err != nil {
-		log.Fatalf("could not create screenshot: %v", err)
-	}
+}
 
-	if err = browser.Close(); err != nil {
-		log.Fatalf("could not close browser: %v", err)
+func sraketa_shutdown() {
+	if err := playwrightBrowser.Close(); err != nil {
+		log.Printf("could not close browser: %v", err)
 	}
-	if err = pw.Stop(); err != nil {
+	if err := playwrightInstance.Stop(); err != nil {
 		log.Fatalf("could not stop Playwright: %v", err)
 	}
 

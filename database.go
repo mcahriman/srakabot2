@@ -13,11 +13,11 @@ import (
 var cbInstance *kivik.Client
 
 func cbConnect() {
-	client, err := kivik.New("couch", "http://localhost:5984/")
+	client, err := kivik.New("couch", appConfig.CouchDB.Host)
 	if err != nil {
 		panic("Could not connect to database")
 	}
-	err = client.Authenticate(context.TODO(), couchdb.BasicAuth("admin", "admin"))
+	err = client.Authenticate(context.TODO(), couchdb.BasicAuth(appConfig.CouchDB.User, appConfig.CouchDB.Password))
 	if err != nil {
 		panic(err)
 	}
@@ -25,7 +25,7 @@ func cbConnect() {
 }
 
 func getUpdatesDB() *kivik.DB {
-	return cbInstance.DB("srakabot_db")
+	return cbInstance.DB(appConfig.CouchDB.Database)
 }
 
 // func getUserMetadataDB() *kivik.DB {

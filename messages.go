@@ -5,8 +5,8 @@ import (
 	_ "embed"
 	"fmt"
 	"log"
+	"regexp"
 	"strconv"
-	"strings"
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -21,13 +21,6 @@ type ChatMessage struct {
 	ReplyToId int64            `json:"replyToId"`
 	User      tgbotapi.User    `json:"user"`
 	Message   tgbotapi.Message `json:"messageDetails"`
-}
-
-var AllowedCommands = []string{
-	"/stats",
-	"/showRanksTest",
-	"/rankDiag",
-	"/bledina",
 }
 
 func processUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
@@ -62,7 +55,8 @@ func processUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 
 func processMessage(bot *tgbotapi.BotAPI, message tgbotapi.Message) {
 
-	messageChunks := strings.Split(message.Text, " ")
+	re := regexp.MustCompile(`[\s@]+`)
+	messageChunks := re.Split(message.Text, 5)
 
 	if len(messageChunks) >= 1 && stringInSlice(messageChunks[0], AllowedCommands) {
 		switch messageChunks[0] {
@@ -141,7 +135,10 @@ func processMessage(bot *tgbotapi.BotAPI, message tgbotapi.Message) {
 			}
 		case "/bledina":
 			go func() {
-				sraketa()
+				if !sraketa() {
+					log.Printf("Could not take screenshot")
+					return
+				}
 				responseConfig := tgbotapi.NewPhoto(message.Chat.ID, tgbotapi.FilePath("sraketa_current.png"))
 				bot.Send(responseConfig)
 			}()
