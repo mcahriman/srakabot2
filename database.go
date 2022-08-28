@@ -33,9 +33,30 @@ func getUpdatesDB() *kivik.DB {
 // 	return db
 // }
 
+func getVoteId(message tgbotapi.Message) (voteId string) {
+	voteId = fmt.Sprintf("vote:%d:%d:%d", message.Chat.ID, message.From.ID, message.ReplyToMessage.MessageID)
+	return voteId
+}
+
+func findVote(message tgbotapi.Message) (vote *KarmaVote) {
+	db := getUpdatesDB()
+	voteId := getVoteId(message)
+	result := db.Get(context.TODO(), voteId)
+	voteReceived := new(KarmaVote)
+	err := result.ScanDoc(voteReceived)
+
+	if err != nil {
+		vote = nil
+	} else {
+		vote = voteReceived
+	}
+	return
+
+}
+
 func putVote(message tgbotapi.Message, value int) {
 	db := getUpdatesDB()
-	voteId := fmt.Sprintf("vote:%d", message.MessageID)
+	voteId := getVoteId(message)
 
 	db.Put(context.TODO(), voteId, KarmaVote{
 		DataType:       "vote",

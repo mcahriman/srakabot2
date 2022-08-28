@@ -39,6 +39,18 @@ func voteUp(bot *tgbotapi.BotAPI, message tgbotapi.Message) {
 }
 
 func checkVote(bot *tgbotapi.BotAPI, message tgbotapi.Message) bool {
+
+	vote := findVote(message)
+
+	if vote != nil {
+		responseConfig := tgbotapi.NewMessage(
+			message.Chat.ID,
+			fmt.Sprintf("Ви вже голосували за це повідомлення, %s", getName(message.From)),
+		)
+		bot.Send(responseConfig)
+		return false
+	}
+
 	if message.From.ID == message.ReplyToMessage.From.ID {
 		responseConfig := tgbotapi.NewMessage(
 			message.Chat.ID,
@@ -52,6 +64,9 @@ func checkVote(bot *tgbotapi.BotAPI, message tgbotapi.Message) bool {
 }
 
 func voteDown(bot *tgbotapi.BotAPI, message tgbotapi.Message) {
+	if !checkVote(bot, message) {
+		return
+	}
 	putVote(message, -1)
 	newKarma := getKarma(int(message.ReplyToMessage.From.ID), int(message.Chat.ID))
 	responseConfig := tgbotapi.NewMessage(message.Chat.ID,
